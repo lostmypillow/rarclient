@@ -29,7 +29,7 @@ import { LineChart } from '@mui/x-charts/LineChart';
 
 // function DeleteCardButton({ cardValue, onDelete }) {
 //   const handleDelete = () => {
-//     fetch(`http://localhost:8000/api/cards/${cardValue}`, {
+//     fetch(`https://rarserver.lostmypillow.duckdns.org/api/cards/${cardValue}`, {
 //       method: 'DELETE',
 //     })
 //       .then(response => response.json())
@@ -64,7 +64,7 @@ function Left({ onDelete }) {
 
   const handleAddItem = () => {
     if (inputValue.trim()) {
-      fetch('http://localhost:8000/api/card', {
+      fetch('https://rarserver.lostmypillow.duckdns.org/api/card', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -81,7 +81,7 @@ function Left({ onDelete }) {
     }
   };
  function handleDelete(e) {
-    fetch(`http://localhost:8000/api/cards/${e.target.id}`, {
+    fetch(`https://rarserver.lostmypillow.duckdns.org/api/cards/${e.target.id}`, {
       method: 'DELETE',
     })
       .then(response => response.json())
@@ -96,7 +96,7 @@ function Left({ onDelete }) {
       .catch(error => console.error('Error deleting card:', error));
   };
   async function Refresh() {
-    fetch('http://localhost:8000/api/cards')
+    fetch('https://rarserver.lostmypillow.duckdns.org/api/cards')
       .then(response => response.json())
       .then(data => {
 
@@ -107,17 +107,17 @@ function Left({ onDelete }) {
   }
 
   useEffect(() => {
-    fetch('http://localhost:8000/api/attempts/total')
+    fetch('https://rarserver.lostmypillow.duckdns.org/api/attempts/total')
       .then(response => response.json())
       .then(data => setTotalAttempts(data.total_attempts))
       .catch(error => console.error('Error fetching total attempts:', error));
 
-    fetch('http://localhost:8000/api/attempts/today')
+    fetch('https://rarserver.lostmypillow.duckdns.org/api/attempts/today')
       .then(response => response.json())
       .then(data => setAttemptsToday(data.total_attempts))
       .catch(error => console.error('Error fetching attempts today:', error));
 
-    fetch('http://localhost:8000/api/cards')
+    fetch('https://rarserver.lostmypillow.duckdns.org/api/cards')
       .then(response => response.json())
       .then(data => {
 
@@ -220,7 +220,7 @@ function App() {
 
   const [monthlySummary, setMonthlySummary] = useState({ xAxis: [], successful: [], failed: [] });
   useEffect(() => {
-    fetch('http://localhost:8000/api/attempts/monthly_summary')
+    fetch('https://rarserver.lostmypillow.duckdns.org/api/attempts/monthly_summary')
       .then(response => response.json())
       .then(data => setMonthlySummary(data))
       .catch(error => console.error('Error fetching monthly summary:', error));
