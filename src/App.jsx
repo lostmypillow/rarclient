@@ -1,68 +1,25 @@
 import { useState, useEffect } from 'react'
-
-import './App.css'
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-
-import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListSubheader from '@mui/material/ListSubheader';
-
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import Collapse from '@mui/material/Collapse';
-
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import { LineChart } from '@mui/x-charts/LineChart';
 
-
-
-
-
-// function DeleteCardButton({ cardValue, onDelete }) {
-//   const handleDelete = () => {
-//     fetch(`https://rarserver.lostmypillow.duckdns.org/api/cards/${cardValue}`, {
-//       method: 'DELETE',
-//     })
-//       .then(response => response.json())
-//       .then(data => {
-//         if (data.success) {
-//           onDelete();
-//           Refresh() // Call the onDelete callback to update the UI
-//         } else {
-//           console.error('Failed to delete card:', cardValue);
-//         }
-//       })
-//       .catch(error => console.error('Error deleting card:', error));
-//   };
-
-//   return (
-//     <Button variant="contained" color="error" onClick={handleDelete}>
-//       Delete Card
-//     </Button>
-//   );
-// }
-
-
-function Left({ onDelete }) {
+function Top() {
   const [totalAttempts, setTotalAttempts] = useState(0);
   const [attemptsToday, setAttemptsToday] = useState(0);
-  const [items, setItems] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [cardList, setCardList] = useState([]);
   const handleInputChange = (event) => {
     setInputValue(event.target.value);
   };
-
-  const handleAddItem = () => {
+  async function handleAddItem() {
     if (inputValue.trim()) {
       fetch('https://rarserver.lostmypillow.duckdns.org/api/card', {
         method: 'POST',
@@ -80,15 +37,14 @@ function Left({ onDelete }) {
         .catch(error => console.error('Error adding card:', error));
     }
   };
- function handleDelete(e) {
+  async function handleDelete(e) {
     fetch(`https://rarserver.lostmypillow.duckdns.org/api/cards/${e.target.id}`, {
       method: 'DELETE',
     })
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-        
-          Refresh() // Call the onDelete callback to update the UI
+          Refresh()
         } else {
           console.error('Failed to delete card:', cardValue);
         }
@@ -99,7 +55,6 @@ function Left({ onDelete }) {
     fetch('https://rarserver.lostmypillow.duckdns.org/api/cards')
       .then(response => response.json())
       .then(data => {
-
         setCardList(data)
         console.log(cardList)
       })
@@ -127,12 +82,9 @@ function Left({ onDelete }) {
       .catch(error => console.error('Error fetching card list:', error));
 
 
-
-
-
   }, []);
   return (
-    <><div className='flex flex-row items-center justify-between gap-6 basis-1/3'>
+    <><div className='flex flex-col md:flex-row items-center justify-between gap-6 basis-1/3'>
       <Stack spacing={2} direction="row">
         <Button variant="contained" size="large">
           <div className='text-3xl'>
@@ -146,53 +98,42 @@ function Left({ onDelete }) {
         </Button>
       </Stack>
 
-      <Card variant='outlined' className='flex flex-col gap-2 w-[50%] border-2 border-black px-4 py-2'>
+      <Card variant='outlined' className='flex flex-col gap-2 w-full md:w-[50%] border-2 border-black px-4 py-2'>
         <CardContent className='flex flex-col gap-4'>
-          <List
-            component="nav"
-            subheader={
+          <List component="nav" subheader=
+          {
               <ListSubheader component="div" id="nested-list-subheader">
                 List of Allowed IDs
               </ListSubheader>
-            }
-          >
-
+          }>
             {cardList.map((item, index) => (
-
               <ListItem key={index}>
                 <ListItemText primary={item.card_val} />
                 <Button id={item.card_val} variant="contained" color="error" onClick={handleDelete}>Delete</Button>
               </ListItem>
             ))}
           </List>
-
           <TextField type="text"
             value={inputValue}
             onChange={handleInputChange} id="filled-basic" variant="filled" label="Add a new item" className='w-full' />
         </CardContent>
         <CardActions>
-          <Button size='large' variant='contained' className='w-full' onClick={handleAddItem}>Add</Button>
-      
+          <Button size='large' variant='contained' className='w-full' onClick={handleAddItem}>
+            Add
+          </Button>
         </CardActions>
       </Card>
-
 
     </div></>
   )
 }
-function BottomLeft() {
-  return (
-    <></>
-  )
-}
 
-function Right({ monthlySummary }) {
+
+function Bottom({ monthlySummary }) {
   const { xAxis, successful, failed } = monthlySummary;
   return (
-    <> <div className='flex items-center justify-center basis-2/3'>
-
-      <Stack sx={{ width: '100%', height: '100%' }}>
-
+   <div className='flex items-center justify-center basis-2/3 w-full h-full'>
+     
         <LineChart
           xAxis={[{ data: xAxis }]}
           series={[
@@ -209,9 +150,8 @@ function Right({ monthlySummary }) {
           // skipAnimation
           grid={{ vertical: true, horizontal: true }}
         />
-      </Stack>
-
-    </div></>
+   
+    </div>
   )
 }
 
@@ -219,21 +159,19 @@ function Right({ monthlySummary }) {
 function App() {
 
   const [monthlySummary, setMonthlySummary] = useState({ xAxis: [], successful: [], failed: [] });
+
   useEffect(() => {
     fetch('https://rarserver.lostmypillow.duckdns.org/api/attempts/monthly_summary')
       .then(response => response.json())
       .then(data => setMonthlySummary(data))
       .catch(error => console.error('Error fetching monthly summary:', error));
   }, [])
+
   return (
-    <>
       <div className='flex flex-col w-svw h-svh p-8'>
-        <Left />
-        <Right monthlySummary={monthlySummary} />
-
+        <Top />
+        <Bottom monthlySummary={monthlySummary} />
       </div>
-
-    </>
   )
 }
 
