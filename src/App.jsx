@@ -11,6 +11,40 @@ import ListSubheader from '@mui/material/ListSubheader';
 import ListItemText from '@mui/material/ListItemText';
 import { LineChart } from '@mui/x-charts/LineChart';
 
+
+function GitHubIcon() {
+  return (
+    <>
+     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        class="feather feather-github">
+        <path
+          d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+        </path>
+      </svg>
+    
+    </>
+  )
+}
+
+
+function Title() {
+  return (
+    <>
+       <div className='flex flex-row items-center justify-between w-full h-14'>
+        <h1 className='text-3xl md:text-4xl font-bold'>
+          RAR Client
+        </h1>
+      
+      <Button variant='outlined' color='secondary' size='large' startIcon={<GitHubIcon />}>  GitHub</Button>
+      
+      </div>
+
+    
+    </>
+  )
+}
+
 function Top() {
   const [totalAttempts, setTotalAttempts] = useState(0);
   const [attemptsToday, setAttemptsToday] = useState(0);
@@ -85,27 +119,28 @@ function Top() {
   }, []);
   return (
     <><div className='flex flex-col md:flex-row items-center justify-between gap-6 basis-1/3'>
-      <Stack spacing={2} direction="row">
-        <Button variant="contained" size="large">
-          <div className='text-3xl'>
+   
+      <div className='flex flex-row md:flex-col gap-4 w-full md:w-[50%] h-[15%] md:h-full'>
+        <Button variant="contained" size="large" disableElevation className='w-full h-full'>
+          <div className='text-3xl md:text-6xl'>
             總請求數: {totalAttempts}
           </div>
         </Button>
-        <Button variant="contained" color="success" size="large">
-          <div className='text-3xl'>
+        <Button variant="contained" color="success" size="large" disableElevation className='w-full h-full'>
+          <div className='text-3xl md:text-6xl'>
             今天請求數: {attemptsToday}
           </div>
         </Button>
-      </Stack>
+      </div>
 
       <Card variant='outlined' className='flex flex-col gap-2 w-full md:w-[50%] border-2 border-black px-4 py-2'>
         <CardContent className='flex flex-col gap-4'>
           <List component="nav" subheader=
-          {
+            {
               <ListSubheader component="div" id="nested-list-subheader">
                 List of Allowed IDs
               </ListSubheader>
-          }>
+            }>
             {cardList.map((item, index) => (
               <ListItem key={index}>
                 <ListItemText primary={item.card_val} />
@@ -132,25 +167,25 @@ function Top() {
 function Bottom({ monthlySummary }) {
   const { xAxis, successful, failed } = monthlySummary;
   return (
-   <div className='flex items-center justify-center basis-2/3 w-full h-full'>
-     
-        <LineChart
-          xAxis={[{ data: xAxis }]}
-          series={[
-            {
-              data: successful,
-            },
-            {
-              data: failed,
+    <div className='flex items-center justify-center basis-2/3 w-full h-full'>
 
-            },
-          ]}
-          height={400}
-          margin={{ top: 10, bottom: 20 }}
-          // skipAnimation
-          grid={{ vertical: true, horizontal: true }}
-        />
-   
+      <LineChart
+        xAxis={[{ data: xAxis }]}
+        series={[
+          {
+            data: successful,
+          },
+          {
+            data: failed,
+
+          },
+        ]}
+        height={400}
+        margin={{ top: 10, bottom: 20 }}
+        // skipAnimation
+        grid={{ vertical: true, horizontal: true }}
+      />
+
     </div>
   )
 }
@@ -168,10 +203,11 @@ function App() {
   }, [])
 
   return (
-      <div className='flex flex-col w-svw h-svh p-8'>
-        <Top />
-        <Bottom monthlySummary={monthlySummary} />
-      </div>
+    <div className='flex flex-col w-svw h-svh p-8 gap-4'>
+      <Title />
+      <Top />
+      <Bottom monthlySummary={monthlySummary} />
+    </div>
   )
 }
 
