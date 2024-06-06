@@ -12,22 +12,9 @@ import ListItemText from '@mui/material/ListItemText';
 import { LineChart } from '@mui/x-charts/LineChart';
 import AddIcon from '@mui/icons-material/Add';
 import GitHubIcon from '@mui/icons-material/GitHub';
-
-// function GitHubIcon() {
-//   return (
-//     <>
-//      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-//         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-//         class="feather feather-github">
-//         <path
-//           d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
-//         </path>
-//       </svg>
-
-//     </>
-//   )
-// }
-
+import RefreshIcon from '@mui/icons-material/Refresh';
+import DeleteIcon from '@mui/icons-material/Delete';
+import CircularProgress from '@mui/material/CircularProgress';
 
 function Title() {
   return (
@@ -36,27 +23,147 @@ function Title() {
         <h1 className='text-3xl md:text-4xl font-bold'>
           RAR Client
         </h1>
-
         <Button variant='outlined' color='secondary' size='large' startIcon={<GitHubIcon />}>  GitHub</Button>
-
       </div>
+    </>
+  )
+}
 
+
+function Status({ totalAttempts, attemptsToday }) {
+
+
+
+  return (
+    <>
+      <List className='w-full md:w-[50%] h-[15%] md:h-full' >
+
+        <ListSubheader>
+          Status
+        </ListSubheader>
+
+        <ListItem className='md:text-4xl'>
+          總請求數: {totalAttempts}
+        </ListItem>
+
+
+        <ListItem className='md:text-4xl'>
+          今天請求數: {attemptsToday}
+        </ListItem>
+      </List>
+    </>
+  )
+}
+
+
+
+
+function AllowedIDs({ cardList, onAdd, onDelete, onInputChange }) {
+  const [inputValue, setInputValue] = useState('');
+  const handleInputChange = (event) => {
+    setInputValue(event.target.value);
+    onInputChange(event.target.value)
+  };
+
+  return (
+    <>
+      <Card variant='outlined' className='flex flex-col gap-2 w-full md:w-[50%] border-2 border-black px-4 py-2'>
+        <CardContent className='flex flex-col gap-4'>
+          <List component="nav" subheader=
+            {
+              <ListSubheader component="div" id="nested-list-subheader">
+                List of Allowed IDs
+              </ListSubheader>
+            }>
+            {cardList.map((item, index) => (
+              <ListItem key={index}>
+                <ListItemText primary={item.card_val} />
+                <Button id={item.card_val} variant="contained" color="error" onClick={onDelete} startIcon={<DeleteIcon />} >Delete</Button>
+              </ListItem>
+            ))}
+          </List>
+          <TextField type="text"
+            value={inputValue}
+            onChange={handleInputChange} id="filled-basic" variant="filled" label="Add a new item" className='w-full' />
+        </CardContent>
+        <CardActions>
+          <Button size='large' variant='contained' className='w-full' onClick={onAdd} startIcon={<AddIcon />}>
+            Add
+          </Button>
+        </CardActions>
+      </Card>
 
     </>
   )
 }
 
-function Top() {
+
+function Graph({ monthlySummary }) {
+  const { xAxis, successful, failed } = monthlySummary;
+  return (
+    <div className='flex items-center justify-center basis-2/3 w-full h-full m-5'>
+      <LineChart
+        xAxis={[{ data: xAxis }]}
+        series={[
+          {
+            data: successful,
+          },
+          {
+            data: failed,
+          },
+        ]}
+        height={400}
+        grid={{ vertical: true, horizontal: true }}
+      />
+    </div>
+  )
+}
+
+
+
+
+
+function App() {
+  const [inputValue, setInputValue] = useState('');
   const [totalAttempts, setTotalAttempts] = useState(0);
   const [attemptsToday, setAttemptsToday] = useState(0);
-  const [inputValue, setInputValue] = useState('');
+  const [monthlySummary, setMonthlySummary] = useState({ xAxis: [], successful: [], failed: [] });
   const [cardList, setCardList] = useState([]);
-  const handleInputChange = (event) => {
-    setInputValue(event.target.value);
-  };
+
+  async function GetTotalAttempts() {
+    await fetch('https://rarserver.lostmypillow.duckdns.org/api/attempts/total')
+      .then(response => response.json())
+      .then(data => setTotalAttempts(data.total_attempts))
+      .catch(error => console.error('Error fetching total attempts:', error));
+
+
+  }
+  async function GetAttemptsToday() {
+    await fetch('https://rarserver.lostmypillow.duckdns.org/api/attempts/today')
+      .then(response => response.json())
+      .then(data => setAttemptsToday(data.total_attempts))
+      .catch(error => console.error('Error fetching attempts today:', error));
+  }
+  async function GetMonthlySummary() {
+    await fetch('https://rarserver.lostmypillow.duckdns.org/api/attempts/monthly_summary')
+      .then(response => response.json())
+      .then(data => setMonthlySummary(data))
+      .catch(error => console.error('Error fetching monthly summary:', error));
+  }
+  async function GetCardList() {
+
+
+    await fetch('https://rarserver.lostmypillow.duckdns.org/api/cards')
+      .then(response => response.json())
+      .then(data => {
+        setCardList(data)
+      })
+      .catch(error => console.error('Error fetching card list:', error));
+
+  }
   async function handleAddItem() {
     if (inputValue.trim()) {
-      fetch('https://rarserver.lostmypillow.duckdns.org/api/card', {
+      await fetch('https://rarserver.lostmypillow.duckdns.org/api/card', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -73,7 +180,7 @@ function Top() {
     }
   };
   async function handleDelete(e) {
-    fetch(`https://rarserver.lostmypillow.duckdns.org/api/cards/${e.target.id}`, {
+    await fetch(`https://rarserver.lostmypillow.duckdns.org/api/cards/${e.target.id}`, {
       method: 'DELETE',
     })
       .then(response => response.json())
@@ -86,133 +193,38 @@ function Top() {
       })
       .catch(error => console.error('Error deleting card:', error));
   };
+  function handleInput(value) {
+    setInputValue(value)
+  }
 
-  function GetData() {
-    fetch('https://rarserver.lostmypillow.duckdns.org/api/attempts/total')
-      .then(response => response.json())
-      .then(data => setTotalAttempts(data.total_attempts))
-      .catch(error => console.error('Error fetching total attempts:', error));
-
-    fetch('https://rarserver.lostmypillow.duckdns.org/api/attempts/today')
-      .then(response => response.json())
-      .then(data => setAttemptsToday(data.total_attempts))
-      .catch(error => console.error('Error fetching attempts today:', error));
-
-    fetch('https://rarserver.lostmypillow.duckdns.org/api/cards')
-      .then(response => response.json())
-      .then(data => {
-
-        setCardList(data)
-        console.log(cardList)
-      })
-      .catch(error => console.error('Error fetching card list:', error));
-
+const [isLoading, setIsLoading] = useState(false)
+  async function Refresh() {
+    setIsLoading(true)
+    await GetMonthlySummary()
+    await GetTotalAttempts()
+    await GetAttemptsToday()
+    await GetCardList()
+    setIsLoading(false)
+    console.log("refreshed")
   }
 
 
-  function Refresh() {
-    fetch('https://rarserver.lostmypillow.duckdns.org/api/cards')
-      .then(response => response.json())
-      .then(data => {
-        setCardList(data)
-        console.log(cardList)
-      })
-      .catch(error => console.error('Error fetching card list:', error));
-  }
-
   useEffect(() => {
-    GetData()
-  }, []);
-  return (
-    <><div className='flex flex-col md:flex-row items-center justify-between gap-6 basis-1/3'>
-
-
-      <List className='w-full md:w-[50%] h-[15%] md:h-full' >
-        <ListSubheader>
-          Status
-        </ListSubheader>
-
-        <ListItem className='md:text-4xl'>
-          總請求數: {totalAttempts}
-        </ListItem>
-        <ListItem className='md:text-4xl'>
-          今天請求數: {attemptsToday}
-        </ListItem>
-      </List>
-      <Card variant='outlined' className='flex flex-col gap-2 w-full md:w-[50%] border-2 border-black px-4 py-2'>
-        <CardContent className='flex flex-col gap-4'>
-          <List component="nav" subheader=
-            {
-              <ListSubheader component="div" id="nested-list-subheader">
-                List of Allowed IDs
-              </ListSubheader>
-            }>
-            {cardList.map((item, index) => (
-              <ListItem key={index}>
-                <ListItemText primary={item.card_val} />
-                <Button id={item.card_val} variant="contained" color="error" onClick={handleDelete}>Delete</Button>
-              </ListItem>
-            ))}
-          </List>
-          <TextField type="text"
-            value={inputValue}
-            onChange={handleInputChange} id="filled-basic" variant="filled" label="Add a new item" className='w-full' />
-        </CardContent>
-        <CardActions>
-          <Button size='large' variant='contained' className='w-full' onClick={handleAddItem} startIcon={<AddIcon />}>
-            Add
-          </Button>
-        </CardActions>
-      </Card>
-
-    </div></>
-  )
-}
-
-
-function Bottom({ monthlySummary }) {
-  const { xAxis, successful, failed } = monthlySummary;
-  return (
-    <div className='flex items-center justify-center basis-2/3 w-full h-full'>
-
-      <LineChart
-        xAxis={[{ data: xAxis }]}
-        series={[
-          {
-            data: successful,
-          },
-          {
-            data: failed,
-
-          },
-        ]}
-        height={400}
-        margin={{ top: 10, bottom: 20 }}
-        // skipAnimation
-        grid={{ vertical: true, horizontal: true }}
-      />
-
-    </div>
-  )
-}
-
-
-function App() {
-
-  const [monthlySummary, setMonthlySummary] = useState({ xAxis: [], successful: [], failed: [] });
-
-  useEffect(() => {
-    fetch('https://rarserver.lostmypillow.duckdns.org/api/attempts/monthly_summary')
-      .then(response => response.json())
-      .then(data => setMonthlySummary(data))
-      .catch(error => console.error('Error fetching monthly summary:', error));
+    Refresh()
   }, [])
 
   return (
     <div className='flex flex-col w-svw h-svh p-8 gap-4'>
       <Title />
-      <Top />
-      <Bottom monthlySummary={monthlySummary} />
+      <Button variant='outlined' size='large' onClick={Refresh} startIcon={isLoading? <CircularProgress size={22} /> : <RefreshIcon />} >Refresh All</Button>
+      <div className='flex flex-col md:flex-row items-center justify-between gap-6 basis-1/3'>
+        <Status
+          totalAttempts={totalAttempts}
+          attemptsToday={attemptsToday} />
+        <AllowedIDs cardList={cardList} onAdd={handleAddItem} onDelete={handleDelete} onInputChange={handleInput} />
+
+      </div>
+      <Graph monthlySummary={monthlySummary} />
     </div>
   )
 }
