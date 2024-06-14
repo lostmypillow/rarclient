@@ -131,7 +131,7 @@ function App() {
   const [cardList, setCardList] = useState([]);
 
   async function GetTotalAttempts() {
-    await fetch('https://rarserver.lostmypillow.duckdns.org/api/attempts/total')
+    await fetch('https://rarserver.onrender.com/api/attempts/total')
       .then(response => response.json())
       .then(data => setTotalAttempts(data.total_attempts))
       .catch(error => console.error('Error fetching total attempts:', error));
@@ -139,13 +139,13 @@ function App() {
 
   }
   async function GetAttemptsToday() {
-    await fetch('https://rarserver.lostmypillow.duckdns.org/api/attempts/today')
+    await fetch('https://rarserver.onrender.com/api/attempts/today')
       .then(response => response.json())
       .then(data => setAttemptsToday(data.total_attempts))
       .catch(error => console.error('Error fetching attempts today:', error));
   }
   async function GetMonthlySummary() {
-    await fetch('https://rarserver.lostmypillow.duckdns.org/api/attempts/monthly_summary')
+    await fetch('https://rarserver.onrender.com/api/attempts/monthly_summary')
       .then(response => response.json())
       .then(data => setMonthlySummary(data))
       .catch(error => console.error('Error fetching monthly summary:', error));
@@ -153,7 +153,7 @@ function App() {
   async function GetCardList() {
 
 
-    await fetch('https://rarserver.lostmypillow.duckdns.org/api/cards')
+    await fetch('https://rarserver.onrender.com/api/cards')
       .then(response => response.json())
       .then(data => {
         setCardList(data)
@@ -163,7 +163,7 @@ function App() {
   }
   async function handleAddItem() {
     if (inputValue.trim()) {
-      await fetch('https://rarserver.lostmypillow.duckdns.org/api/card', {
+      await fetch('https://rarserver.onrender.com/api/card', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -180,7 +180,7 @@ function App() {
     }
   };
   async function handleDelete(e) {
-    await fetch(`https://rarserver.lostmypillow.duckdns.org/api/cards/${e.target.id}`, {
+    await fetch(`https://rarserver.onrender.com/api/cards/${e.target.id}`, {
       method: 'DELETE',
     })
       .then(response => response.json())
