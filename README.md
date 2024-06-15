@@ -1,7 +1,9 @@
 # RAR Client
+__**Plammed integration with [RARServer](https://github.com/lostmypillow/rarserver) as a single Django web app forthcoming!!!**__
+
 React frontend for Raspberry Pi | Arduino | RFID Project
 
-[Demo](https://lostmypillow.github.io/jsearch-react)
+[Demo](https://lostmypillow.github.io/rarclient)
 
 
 ## Tech Stack
